@@ -3,11 +3,47 @@
 
 const calculator = document.getElementById("calculator-content");
 
-// Fare records will be added only after official verification.
+const barangays = [
+    "Ampid I",
+    "Ampid II",
+    "Banaba",
+    "Dulong Bayan I",
+    "Dulong Bayan II",
+    "Guinayang",
+    "Guitnang Bayan I",
+    "Guitnang Bayan II",
+    "Gulod Malaya",
+    "Malanday",
+    "Maly",
+    "Pintong Bukawe",
+    "Santa Ana",
+    "Santo Niño",
+    "Silangan"
+];
+
+// No fare records will be added until officially verified.
 const fareRecords = [];
+
+function barangayOptions() {
+    return barangays.map(name =>
+        `<option value="${name}">${name}</option>`
+    ).join("");
+}
 
 calculator.innerHTML = `
     <h3>Check Your Transportation Fare</h3>
+
+    <label for="origin">Origin</label>
+    <select id="origin">
+        <option value="">Select starting barangay</option>
+        ${barangayOptions()}
+    </select>
+
+    <label for="destination">Destination</label>
+    <select id="destination">
+        <option value="">Select destination barangay</option>
+        ${barangayOptions()}
+    </select>
 
     <label for="transport">Transportation Type</label>
     <select id="transport">
@@ -28,51 +64,62 @@ calculator.innerHTML = `
 
     <button id="check-fare">Check Fare</button>
 
-    <div id="fare-result" aria-live="polite"></div>
+    <div id="fare-result" aria-live="polite">
+        <p>Your fare information will appear here.</p>
+    </div>
 `;
 
 document.getElementById("check-fare").addEventListener("click", function () {
+    const origin = document.getElementById("origin").value;
+    const destination = document.getElementById("destination").value;
     const transport = document.getElementById("transport").value;
     const passenger = document.getElementById("passenger").value;
     const result = document.getElementById("fare-result");
 
-    if (!transport) {
-        result.textContent = "Please select a transportation type.";
+    if (!origin || !destination || !transport) {
+        result.innerHTML = "<p>Please complete your trip details.</p>";
+        return;
+    }
+
+    if (origin === destination) {
+        result.innerHTML =
+            "<p>Please choose two different barangays.</p>";
         return;
     }
 
     const fare = fareRecords.find(record =>
+        record.origin === origin &&
+        record.destination === destination &&
         record.transport === transport
     );
 
     if (!fare) {
         result.innerHTML = `
-            <h3>Fare not yet verified</h3>
-            <p>
-                We are still gathering official ${transport}
-                fare information for San Mateo, Rizal.
-            </p>
-            <p>Please check again once verified data is available.</p>
+            <h3>Route or fare not yet verified</h3>
+            <p><strong>Origin:</strong> ${origin}</p>
+            <p><strong>Destination:</strong> ${destination}</p>
+            <p><strong>Transportation:</strong> ${transport}</p>
+            <p>We are still verifying this route and its official fare.</p>
+            <p>Please check again when verified information becomes available.</p>
         `;
         return;
     }
 
-    // Discount calculation will use verified fare rules.
     const discount = fare.discounts[passenger];
 
     if (typeof discount !== "number") {
-        result.textContent =
-            "Discount information is not yet verified for this fare.";
+        result.innerHTML =
+            "<p>Discount information is not yet verified.</p>";
         return;
     }
 
     const finalFare = fare.regularFare * (1 - discount);
 
     result.innerHTML = `
-        <h3>Fare Information</h3>
+        <h3>Verified Fare Information</h3>
         <p>Regular fare: ₱${fare.regularFare.toFixed(2)}</p>
         <p>Discount: ${(discount * 100).toFixed(0)}%</p>
-        <p>Estimated discounted fare: ₱${finalFare.toFixed(2)}</p>
+        <p>Discounted fare: ₱${finalFare.toFixed(2)}</p>
         <small>Source: ${fare.source}</small>
     `;
 });
