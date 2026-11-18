@@ -284,3 +284,39 @@ footer p + p {
         padding: 23px;
     }
 }
+/* Transport Directory */
+
+.route-card {
+    margin-top: 28px;
+    padding: 28px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-width: 750px;
+    box-shadow: 0 8px 24px rgba(23, 63, 53, 0.05);
+}
+
+.route-card h3 {
+    color: var(--dark);
+    margin-bottom: 15px;
+}
+
+.operator-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.operator-item:last-of-type {
+    border-bottom: none;
+}
+
+.operator-item h4 {
+    color: var(--green);
+    margin-bottom: 3px;
+}
+
+.route-card p:last-child {
+    margin-top: 15px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
