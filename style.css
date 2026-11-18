@@ -506,3 +506,8 @@ nav a:hover {
     font-size: 38px;
     font-weight: 700;
 }
+/* REMOVE CIRCLE DECORATIONS FROM HERO */
+.hero::before,
+.hero::after {
+    display: none !important;
+}
