@@ -181,93 +181,50 @@ const terminals = [
     {
         name: "AFPHODA Jeep Terminal",
         type: "Jeepney",
-        area: "AFP Road, Barangay Silangan",
-        coords: [14.65933, 121.15027],
-        status: "Approximate area marker"
+        area: "AFP Road, Silangan",
+        coords: [14.6579375, 121.1513125]
     },
     {
-        name: "EVMC Terminal",
-        type: "Jeepney",
-        area: "Tierra Monte, Barangay Silangan",
-        coords: [14.65656, 121.14992],
-        status: "Approximate area marker"
-    },
-    {
-        name: "Jeepney Terminal & Office",
-        type: "Jeepney",
-        area: "Sampaguita Street, Modesta Village, Santo Niño",
-        coords: [14.6990, 121.1200],
-        status: "Approximate area marker"
-    },
-    {
-        name: "SAMATODA Tricycle Terminal",
+        name: "SIL TODA Terminal",
         type: "Tricycle",
-        area: "M.H. Del Pilar Street corner Kambal Road",
-        coords: [14.6989, 121.1210],
-        status: "Approximate area marker"
+        area: "Langka Street, Silangan",
+        coords: [14.6576875, 121.1520625]
     },
     {
-        name: "SIL TODA Tricycle Terminal",
-        type: "Tricycle",
-        area: "Langka Street, Barangay Silangan",
-        coords: [14.6600, 121.1510],
-        status: "Approximate area marker"
-    },
-    {
-        name: "BUTODA Tricycle Terminal",
+        name: "GBS TODA Terminal",
         type: "Tricycle",
         area: "Kambal Road",
-        coords: [14.6990, 121.1215],
-        status: "Public listing; approximate pin"
+        coords: [14.6959375, 121.1214375]
     },
     {
-        name: "GBS TODA Tricycle Terminal",
+        name: "BUTODA Terminal",
         type: "Tricycle",
         area: "Kambal Road",
-        coords: [14.6992, 121.1218],
-        status: "Public listing; approximate pin"
-    },
-    {
-        name: "GBS TODA - M.H. Del Pilar",
-        type: "Tricycle",
-        area: "M.H. Del Pilar Street",
-        coords: [14.6995, 121.1205],
-        status: "Public listing; approximate pin"
+        coords: [14.6959375, 121.1214375]
     },
     {
         name: "MATODA Terminal",
         type: "Tricycle",
-        area: "Sorrento Village Road",
-        coords: [14.6950, 121.1250],
-        status: "Unverified approximate pin"
-    },
-    {
-        name: "MATODA Tricycle Terminal",
-        type: "Tricycle",
         area: "Patiis Road",
-        coords: [14.7240, 121.1260],
-        status: "Approximate area marker"
+        coords: [14.7025625, 121.1265625]
     },
     {
         name: "Patiis Tricycle Terminal",
         type: "Tricycle",
-        area: "Patiis Road, Malanday",
-        coords: [14.7242, 121.1262],
-        status: "Approximate area marker"
+        area: "Malanday",
+        coords: [14.7025625, 121.1263125]
     },
     {
-        name: "SN TODA Tricycle Terminal",
+        name: "SN TODA Terminal",
         type: "Tricycle",
-        area: "San Mateo, exact street not confirmed",
-        coords: [14.7000, 121.1190],
-        status: "Unverified approximate pin"
+        area: "San Mateo",
+        coords: [14.6691875, 121.1343125]
     },
     {
         name: "DB TODA Terminal",
         type: "Tricycle",
         area: "General Luna Avenue",
-        coords: [14.6990, 121.1150],
-        status: "Approximate area marker"
+        coords: [14.7008125, 121.1246875]
     }
 ];
 
