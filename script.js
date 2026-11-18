@@ -160,6 +160,7 @@ document.getElementById("check-fare").addEventListener("click", function () {
         </small>
     `;
 });
+
 // FAREFAIR INTERACTIVE MAP
 
 const farefairMap = L.map("farefair-map").setView(
@@ -171,3 +172,123 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(farefairMap);
+
+
+// TERMINAL MARKERS
+// Coordinates are approximate area markers, not verified entrances.
+
+const terminals = [
+    {
+        name: "AFPHODA Jeep Terminal",
+        type: "Jeepney",
+        area: "AFP Road, Barangay Silangan",
+        coords: [14.65933, 121.15027],
+        status: "Approximate area marker"
+    },
+    {
+        name: "EVMC Terminal",
+        type: "Jeepney",
+        area: "Tierra Monte, Barangay Silangan",
+        coords: [14.65656, 121.14992],
+        status: "Approximate area marker"
+    },
+    {
+        name: "Jeepney Terminal & Office",
+        type: "Jeepney",
+        area: "Sampaguita Street, Modesta Village, Santo Niño",
+        coords: [14.6990, 121.1200],
+        status: "Approximate area marker"
+    },
+    {
+        name: "SAMATODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "M.H. Del Pilar Street corner Kambal Road",
+        coords: [14.6989, 121.1210],
+        status: "Approximate area marker"
+    },
+    {
+        name: "SIL TODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "Langka Street, Barangay Silangan",
+        coords: [14.6600, 121.1510],
+        status: "Approximate area marker"
+    },
+    {
+        name: "BUTODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "Kambal Road",
+        coords: [14.6990, 121.1215],
+        status: "Public listing; approximate pin"
+    },
+    {
+        name: "GBS TODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "Kambal Road",
+        coords: [14.6992, 121.1218],
+        status: "Public listing; approximate pin"
+    },
+    {
+        name: "GBS TODA - M.H. Del Pilar",
+        type: "Tricycle",
+        area: "M.H. Del Pilar Street",
+        coords: [14.6995, 121.1205],
+        status: "Public listing; approximate pin"
+    },
+    {
+        name: "MATODA Terminal",
+        type: "Tricycle",
+        area: "Sorrento Village Road",
+        coords: [14.6950, 121.1250],
+        status: "Unverified approximate pin"
+    },
+    {
+        name: "MATODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "Patiis Road",
+        coords: [14.7240, 121.1260],
+        status: "Approximate area marker"
+    },
+    {
+        name: "Patiis Tricycle Terminal",
+        type: "Tricycle",
+        area: "Patiis Road, Malanday",
+        coords: [14.7242, 121.1262],
+        status: "Approximate area marker"
+    },
+    {
+        name: "SN TODA Tricycle Terminal",
+        type: "Tricycle",
+        area: "San Mateo, exact street not confirmed",
+        coords: [14.7000, 121.1190],
+        status: "Unverified approximate pin"
+    },
+    {
+        name: "DB TODA Terminal",
+        type: "Tricycle",
+        area: "General Luna Avenue",
+        coords: [14.6990, 121.1150],
+        status: "Approximate area marker"
+    }
+];
+
+terminals.forEach(terminal => {
+    const marker = L.marker(terminal.coords).addTo(farefairMap);
+
+    marker.bindPopup(`
+        <strong>${terminal.name}</strong><br>
+        ${terminal.type} Terminal<br>
+        ${terminal.area}<br>
+        <small>${terminal.status}</small>
+    `);
+});
+
+
+// SHOW ALL TERMINAL MARKERS
+const terminalBounds = L.latLngBounds(
+    terminals.map(terminal => terminal.coords)
+);
+
+farefairMap.fitBounds(terminalBounds, {
+    padding: [30, 30]
+});
+
