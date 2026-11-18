@@ -493,7 +493,14 @@ footer {
     font-size: 58px;
     font-weight: 800;
 }
+/* NAVIGATION TEXT COLOR */
+nav a {
+    color: #FFFFFF !important;
+}
 
+nav a:hover {
+    color: #F5C6D0 !important;
+}
 .hero h2 {
     color: #FFFFFF !important;
     font-size: 38px;
