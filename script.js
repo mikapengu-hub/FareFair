@@ -21,7 +21,22 @@ const barangays = [
     "Silangan"
 ];
 
-// No fare records will be added until officially verified.
+const routeLeads = [
+    {
+        id: "SM-001",
+        origin: "Silangan",
+        destination: "San Mateo Public Terminal",
+        transport: "modern-jeepney",
+        source: "LTFRB Memorandum Circular No. 2024-010",
+        sourceDate: "2024-05-07",
+        sourceUrl: "https://naro.law.upd.edu.ph/issuances/3903",
+        status: "for-verification",
+        currentOperation: "unconfirmed",
+        regularFare: null,
+        notes: "Application notice only. Current operation and approved fare need confirmation."
+    }
+];
+
 const fareRecords = [];
 
 function barangayOptions() {
