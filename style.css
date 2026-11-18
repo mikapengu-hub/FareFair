@@ -357,3 +357,27 @@ footer p + p {
     color: var(--muted);
     font-size: 0.9rem;
 }
+/* Official Legal References */
+
+.rights-sources {
+    margin-top: 30px;
+    padding: 24px;
+    background: var(--sage);
+    border-radius: 16px;
+}
+
+.rights-sources h3 {
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.rights-sources li {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.rights-sources a {
+    color: var(--dark);
+    text-decoration: underline;
+    font-weight: 600;
+}
