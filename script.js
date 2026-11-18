@@ -1,7 +1,4 @@
 
-// FareFair - San Mateo, Rizal
-// DEMONSTRATION VERSION - Sample fares are NOT official fares.
-
 const calculator = document.getElementById("calculator-content");
 
 const barangays = [
@@ -23,80 +20,21 @@ const barangays = [
 ];
 
 const transportNames = {
-    "jeepney": "Jeepney",
+    jeepney: "Jeepney",
     "e-jeepney": "E-Jeepney",
-    "bus": "Bus",
-    "tricycle": "Tricycle"
+    bus: "Bus",
+    tricycle: "Tricycle"
 };
 
-// FICTIONAL SAMPLE DATA FOR WEBSITE DEMONSTRATION ONLY.
-// These are not confirmed routes or official transportation fares.
+const passengerNames = {
+    regular: "Regular Passenger",
+    student: "Student",
+    senior: "Senior Citizen",
+    pwd: "Person with Disability (PWD)"
+};
 
-const demoRoutes = [
-    {
-        origin: "Ampid I",
-        destination: "Ampid II",
-        fares: {
-            "jeepney": 15,
-            "e-jeepney": 16,
-            "bus": 18,
-            "tricycle": 35
-        }
-    },
-    {
-        origin: "Banaba",
-        destination: "Santa Ana",
-        fares: {
-            "jeepney": 16,
-            "e-jeepney": 17,
-            "bus": 19,
-            "tricycle": 40
-        }
-    },
-    {
-        origin: "Dulong Bayan I",
-        destination: "Dulong Bayan II",
-        fares: {
-            "jeepney": 15,
-            "e-jeepney": 16,
-            "bus": 18,
-            "tricycle": 35
-        }
-    },
-    {
-        origin: "Guitnang Bayan I",
-        destination: "Guitnang Bayan II",
-        fares: {
-            "jeepney": 15,
-            "e-jeepney": 16,
-            "bus": 18,
-            "tricycle": 35
-        }
-    },
-    {
-        origin: "Malanday",
-        destination: "Maly",
-        fares: {
-            "jeepney": 17,
-            "e-jeepney": 18,
-            "bus": 20,
-            "tricycle": 45
-        }
-    },
-    {
-        origin: "Silangan",
-        destination: "Gulod Malaya",
-        fares: {
-            "jeepney": 18,
-            "e-jeepney": 19,
-            "bus": 21,
-            "tricycle": 50
-        }
-    }
-];
-
-// Demonstration discount rates.
-// Actual eligibility and applicability depend on the law and trip.
+// DEMONSTRATION DISCOUNT RATES ONLY.
+// Actual legal eligibility and applicability must be checked.
 
 const discounts = {
     regular: 0,
@@ -105,11 +43,14 @@ const discounts = {
     pwd: 0.20
 };
 
-const passengerNames = {
-    regular: "Regular passenger",
-    student: "Student",
-    senior: "Senior citizen",
-    pwd: "Person with disability (PWD)"
+// FICTIONAL BASE FARES FOR WEBSITE TESTING ONLY.
+// These are NOT official San Mateo transportation fares.
+
+const baseFares = {
+    jeepney: 13,
+    "e-jeepney": 14,
+    bus: 16,
+    tricycle: 25
 };
 
 function barangayOptions() {
@@ -122,8 +63,8 @@ calculator.innerHTML = `
     <h3>Check Your Transportation Fare</h3>
 
     <p class="demo-notice">
-        DEMO VERSION: Sample fares are for website demonstration
-        only and are not official transportation rates.
+        DEMONSTRATION ONLY: All displayed fares are fictional
+        sample estimates, not official transportation rates.
     </p>
 
     <label for="origin">Origin</label>
@@ -149,10 +90,10 @@ calculator.innerHTML = `
 
     <label for="passenger">Passenger Category</label>
     <select id="passenger">
-        <option value="regular">Regular passenger</option>
+        <option value="regular">Regular Passenger</option>
         <option value="student">Student</option>
-        <option value="senior">Senior citizen</option>
-        <option value="pwd">Person with disability (PWD)</option>
+        <option value="senior">Senior Citizen</option>
+        <option value="pwd">PWD</option>
     </select>
 
     <button id="check-fare" type="button">Check Fare</button>
@@ -170,44 +111,27 @@ document.getElementById("check-fare").addEventListener("click", function () {
     const result = document.getElementById("fare-result");
 
     if (!origin || !destination || !transport) {
-        result.innerHTML = `
-            <p>Please complete your trip details.</p>
-        `;
+        result.innerHTML = "<p>Please complete your trip details.</p>";
         return;
     }
 
     if (origin === destination) {
-        result.innerHTML = `
-            <p>Please choose two different barangays.</p>
-        `;
+        result.innerHTML = "<p>Please select two different barangays.</p>";
         return;
     }
 
-    const route = demoRoutes.find(item =>
-        (item.origin === origin && item.destination === destination) ||
-        (item.origin === destination && item.destination === origin)
-    );
+    // Temporary route-distance simulation.
+    // Barangay order is NOT actual geographic distance.
 
-    if (!route) {
-        result.innerHTML = `
-            <h3>No Sample Route Available</h3>
-            <p><strong>Origin:</strong> ${origin}</p>
-            <p><strong>Destination:</strong> ${destination}</p>
-            <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-            <p>This route is not yet included in our demonstration database.</p>
-            <p>More sample routes can be added as the website develops.</p>
-        `;
-        return;
-    }
+    const originIndex = barangays.indexOf(origin);
+    const destinationIndex = barangays.indexOf(destination);
+    const routeSteps = Math.abs(originIndex - destinationIndex);
 
-    const regularFare = route.fares[transport];
+    // Calculate sample regular fare.
 
-    if (typeof regularFare !== "number") {
-        result.innerHTML = `
-            <p>No sample fare is available for this transportation type.</p>
-        `;
-        return;
-    }
+    const regularFare = baseFares[transport] + (routeSteps * 2);
+
+    // Calculate selected passenger discount.
 
     const discountRate = discounts[passenger];
     const discountAmount = regularFare * discountRate;
@@ -219,19 +143,20 @@ document.getElementById("check-fare").addEventListener("click", function () {
         <p><strong>Origin:</strong> ${origin}</p>
         <p><strong>Destination:</strong> ${destination}</p>
         <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-        <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
+        <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
 
         <hr>
 
-        <p>Regular fare: ₱${regularFare.toFixed(2)}</p>
-        <p>Discount: ${(discountRate * 100).toFixed(0)}%</p>
-        <p>Discount amount: ₱${discountAmount.toFixed(2)}</p>
+        <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
+        <p>Discount Rate: ${(discountRate * 100).toFixed(0)}%</p>
+        <p>Discount Amount: ₱${discountAmount.toFixed(2)}</p>
 
         <h3>Estimated Fare: ₱${finalFare.toFixed(2)}</h3>
 
         <small>
-            Demonstration data only. This is not an official fare quotation.
-            Actual fares and discount eligibility may vary.
+            Fictional demonstration estimate only.
+            Not an official fare quotation. Actual fares and
+            discount eligibility may vary.
         </small>
     `;
 });
