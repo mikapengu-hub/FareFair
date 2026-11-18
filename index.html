@@ -7,6 +7,10 @@
     <meta name="description" content="FareFair helps commuters in San Mateo, Rizal understand transportation fares and discounts.">
     <title>FareFair | Know Your Fare</title>
     <link rel="stylesheet" href="style.css">
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
 </head>
 
 <body>
@@ -55,7 +59,17 @@
         Explore transportation options and local terminal
         information within San Mateo, Rizal.
     </p>
+<div class="map-heading">
+    <h3>FareFair Interactive Map</h3>
+    <p>Explore San Mateo, Rizal and its transportation locations.</p>
+</div>
 
+<div id="farefair-map"></div>
+
+<p class="map-disclaimer">
+    Map preview. Terminal locations and routes will be added
+    as their locations are established.
+</p>
     <p class="demo-notice">
         Demonstration directory: Information about routes,
         terminals, and fares may require further verification.
@@ -322,6 +336,7 @@
         <p>Made for commuters in San Mateo, Rizal.</p>
     </footer>
 
-    <script src="script.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script> 
 </body>
 </html>
