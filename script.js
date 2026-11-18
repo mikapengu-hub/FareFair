@@ -33,14 +33,17 @@ const passengerNames = {
     pwd: "Person with Disability (PWD)"
 };
 
-// TRANSPORTATION FARE REFERENCES
-// These are reference rates, not route-specific fare quotations.
-
-const jeepneyFareReference = {
-    minimumFare: 14,
-    minimumDistance: 4,
-    succeedingRate: 2
+const discounts = {
+    regular: 0,
+    student: 0.20,
+    senior: 0.20,
+    pwd: 0.20
 };
+
+// Traditional jeepney fare reference
+const jeepneyMinimumFare = 14;
+const minimumDistance = 4;
+const succeedingRate = 2;
 
 function barangayOptions() {
     return barangays.map(name =>
@@ -48,137 +51,144 @@ function barangayOptions() {
     ).join("");
 }
 
-if (calculator) {
-    calculator.innerHTML = `
-        <h3>Check Your Transportation Fare</h3>
+calculator.innerHTML = `
+    <h3>Check Your Transportation Fare</h3>
 
-        <p class="demo-notice">
-            FareFair is working to provide accurate and verified
-            transportation fare information within San Mateo, Rizal.
-            Unverified route fares are not displayed as confirmed prices.
-        </p>
+    <p class="demo-notice">
+        Traditional jeepney fares use the minimum fare
+        and succeeding-distance rate. Other transport fares
+        are subject to verification.
+    </p>
 
-        <label for="origin">Origin</label>
-        <select id="origin">
-            <option value="">Select starting barangay</option>
-            ${barangayOptions()}
-        </select>
+    <label for="origin">Origin</label>
+    <select id="origin">
+        <option value="">Select starting barangay</option>
+        ${barangayOptions()}
+    </select>
 
-        <label for="destination">Destination</label>
-        <select id="destination">
-            <option value="">Select destination barangay</option>
-            ${barangayOptions()}
-        </select>
+    <label for="destination">Destination</label>
+    <select id="destination">
+        <option value="">Select destination</option>
+        ${barangayOptions()}
+    </select>
 
-        <label for="transport">Transportation Type</label>
-        <select id="transport">
-            <option value="">Select transportation</option>
-            <option value="jeepney">Traditional Jeepney</option>
-            <option value="e-jeepney">E-Jeepney</option>
-            <option value="bus">Bus</option>
-            <option value="tricycle">Tricycle</option>
-        </select>
+    <label for="transport">Transportation Type</label>
+    <select id="transport">
+        <option value="">Select transportation</option>
+        <option value="jeepney">Traditional Jeepney</option>
+        <option value="e-jeepney">E-Jeepney</option>
+        <option value="bus">Bus</option>
+        <option value="tricycle">Tricycle</option>
+    </select>
 
-        <label for="passenger">Passenger Category</label>
-        <select id="passenger">
-            <option value="regular">Regular Passenger</option>
-            <option value="student">Student</option>
-            <option value="senior">Senior Citizen</option>
-            <option value="pwd">PWD</option>
-        </select>
+    <div id="distance-container" style="display:none;">
+        <label for="distance">Estimated Distance (km)</label>
+        <input
+            type="number"
+            id="distance"
+            min="0.1"
+            step="0.1"
+            placeholder="Enter distance in kilometers"
+        >
+        <small>Enter the actual road distance of your trip.</small>
+    </div>
 
-        <button id="check-fare" type="button">Check Fare</button>
+    <label for="passenger">Passenger Category</label>
+    <select id="passenger">
+        <option value="regular">Regular Passenger</option>
+        <option value="student">Student</option>
+        <option value="senior">Senior Citizen</option>
+        <option value="pwd">PWD</option>
+    </select>
 
-        <div id="fare-result" aria-live="polite">
-            <p>Your fare information will appear here.</p>
-        </div>
-    `;
+    <button id="check-fare" type="button">Check Fare</button>
 
-    document.getElementById("check-fare").addEventListener("click", function () {
-        const origin = document.getElementById("origin").value;
-        const destination = document.getElementById("destination").value;
-        const transport = document.getElementById("transport").value;
-        const passenger = document.getElementById("passenger").value;
-        const result = document.getElementById("fare-result");
+    <div id="fare-result" aria-live="polite">
+        <p>Your fare information will appear here.</p>
+    </div>
+`;
 
-        if (!origin || !destination || !transport) {
-            result.innerHTML = `
-                <p>Please complete your trip details.</p>
-            `;
-            return;
-        }
+const transportSelect = document.getElementById("transport");
+const distanceContainer = document.getElementById("distance-container");
 
-        if (origin === destination) {
-            result.innerHTML = `
-                <p>Please select two different barangays.</p>
-            `;
-            return;
-        }
+transportSelect.addEventListener("change", function () {
+    distanceContainer.style.display =
+        this.value === "jeepney" ? "block" : "none";
+});
 
-        let referenceMessage = "";
+document.getElementById("check-fare").addEventListener("click", function () {
+    const origin = document.getElementById("origin").value;
+    const destination = document.getElementById("destination").value;
+    const transport = document.getElementById("transport").value;
+    const passenger = document.getElementById("passenger").value;
+    const result = document.getElementById("fare-result");
 
-        if (transport === "jeepney") {
-            referenceMessage = `
-                <h4>Traditional Jeepney Fare Reference</h4>
+    if (!origin || !destination || !transport) {
+        result.innerHTML = "<p>Please complete your trip details.</p>";
+        return;
+    }
 
-                <p>
-                    Minimum fare: ₱${jeepneyFareReference.minimumFare.toFixed(2)}
-                    for the first ${jeepneyFareReference.minimumDistance} kilometers.
-                </p>
+    if (origin === destination) {
+        result.innerHTML = "<p>Please select two different barangays.</p>";
+        return;
+    }
 
-                <p>
-                    Succeeding distance: ₱${jeepneyFareReference.succeedingRate.toFixed(2)}
-                    per kilometer.
-                </p>
-
-                <small>
-                    This is a general fare reference, not the confirmed
-                    fare for your selected route.
-                </small>
-            `;
-        } else {
-            referenceMessage = `
-                <p>
-                    The fare reference for this transportation type
-                    is still being verified.
-                </p>
-            `;
-        }
-
-        const discountMessage =
-            passenger === "regular"
-                ? "Regular passenger fare rules apply."
-                : "Eligible students, senior citizens, and PWDs may receive applicable fare discounts under existing regulations. Present the required identification or proof of eligibility.";
-
+    if (transport !== "jeepney") {
         result.innerHTML = `
             <h3>Fare Information</h3>
-
             <p><strong>Origin:</strong> ${origin}</p>
             <p><strong>Destination:</strong> ${destination}</p>
             <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-            <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
-
-            <hr>
-
-            ${referenceMessage}
-
-            <h3>Route Fare: Not Yet Verified</h3>
-
-            <p>
-                FareFair does not have a confirmed route-specific
-                fare for this trip yet.
-            </p>
-
-            <p>${discountMessage}</p>
-
-            <small>
-                Please confirm the actual fare with the authorized
-                transportation operator. FareFair will update its
-                information as verified local fare data becomes available.
-            </small>
+            <p>Route-specific fare information is still being verified.</p>
+            <small>FareFair will display an amount once reliable fare data is available.</small>
         `;
-    });
-}
+        return;
+    }
+
+    const distance = parseFloat(
+        document.getElementById("distance").value
+    );
+
+    if (!distance || distance <= 0) {
+        result.innerHTML = "<p>Please enter a valid trip distance.</p>";
+        return;
+    }
+
+    let regularFare = jeepneyMinimumFare;
+
+    if (distance > minimumDistance) {
+        regularFare +=
+            Math.ceil(distance - minimumDistance) * succeedingRate;
+    }
+
+    const discountRate = discounts[passenger];
+    const discountAmount = regularFare * discountRate;
+    const finalFare = regularFare - discountAmount;
+
+    result.innerHTML = `
+        <h3>Fare Estimate</h3>
+
+        <p><strong>Origin:</strong> ${origin}</p>
+        <p><strong>Destination:</strong> ${destination}</p>
+        <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
+        <p><strong>Distance:</strong> ${distance.toFixed(1)} km</p>
+        <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
+
+        <hr>
+
+        <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
+        <p>Discount: ${(discountRate * 100).toFixed(0)}%</p>
+        <p>Discount Amount: ₱${discountAmount.toFixed(2)}</p>
+
+        <h3>Estimated Fare: ₱${finalFare.toFixed(2)}</h3>
+
+        <small>
+            Based on the traditional jeepney fare reference.
+            Actual route distance and fare should be confirmed.
+            Discounts are subject to applicable eligibility rules.
+        </small>
+    `;
+});
 
 
 // FAREFAIR INTERACTIVE MAP
@@ -196,10 +206,6 @@ if (mapElement && typeof L !== "undefined") {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(farefairMap);
-
-
-    // TERMINAL MARKERS
-    // Coordinates are approximate area markers, not verified entrances.
 
     const terminals = [
         {
@@ -259,12 +265,9 @@ if (mapElement && typeof L !== "undefined") {
             <strong>${terminal.name}</strong><br>
             ${terminal.type} Terminal<br>
             ${terminal.area}<br>
-            <small>Approximate area marker. Exact terminal entrance is subject to verification.</small>
+            <small>Approximate area marker. Exact entrance is subject to verification.</small>
         `);
     });
-
-
-    // SHOW ALL TERMINAL MARKERS
 
     const terminalBounds = L.latLngBounds(
         terminals.map(terminal => terminal.coords)
