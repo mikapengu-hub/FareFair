@@ -386,3 +386,68 @@ footer p + p {
     text-decoration: underline;
     font-weight: 600;
 }
+
+/* FAREFAIR - CHOCOLATE & BABY PINK THEME */
+
+:root {
+    --dark: #4B2E2B;
+    --green: #8B5E5A;
+    --sage: #F5C6D0;
+    --cream: #FFF9F5;
+    --white: #FFFFFF;
+    --text: #4B2E2B;
+    --muted: #927A78;
+    --border: #EBD5D8;
+}
+
+body {
+    background: #FFF9F5 !important;
+    color: #4B2E2B !important;
+}
+
+nav, header {
+    background: #4B2E2B !important;
+}
+
+h1, h2, h3, h4 {
+    color: #4B2E2B;
+}
+
+button, .btn {
+    background: #8B5E5A !important;
+    color: #FFFFFF !important;
+    border: none;
+}
+
+button:hover, .btn:hover {
+    background: #4B2E2B !important;
+}
+
+.hero {
+    background: linear-gradient(135deg, #4B2E2B, #8B5E5A) !important;
+    color: #FFFFFF !important;
+}
+
+.route-card,
+.operator-item,
+.rights-card,
+.card {
+    background: #FCE9ED !important;
+    border: 1px solid #EBD5D8 !important;
+    color: #4B2E2B !important;
+}
+
+input, select {
+    background: #FFFFFF !important;
+    color: #4B2E2B !important;
+    border: 1px solid #E5C3CA !important;
+}
+
+a {
+    color: #8B5E5A;
+}
+
+footer {
+    background: #4B2E2B !important;
+    color: #FFF9F5 !important;
+}
