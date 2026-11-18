@@ -160,3 +160,14 @@ document.getElementById("check-fare").addEventListener("click", function () {
         </small>
     `;
 });
+// FAREFAIR INTERACTIVE MAP
+
+const farefairMap = L.map("farefair-map").setView(
+    [14.698, 121.12],
+    13
+);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(farefairMap);
