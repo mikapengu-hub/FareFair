@@ -90,8 +90,7 @@ calculator.innerHTML = `
             step="0.1"
             placeholder="Enter distance in kilometers"
         >
-        <small>Enter the actual road distance of your trip.</small>
-    </div>
+<small>Fare will be calculated based on the selected trip distance.</small>    </div>
 
     <label for="passenger">Passenger Category</label>
     <select id="passenger">
