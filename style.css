@@ -511,3 +511,33 @@ nav a:hover {
 .hero::after {
     display: none !important;
 }
+/* FAREFAIR CREATOR CREDITS */
+
+.creator-credit {
+    background-color: #4B2E2B;
+    color: #FFF9F5;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+.footer-penguin {
+    width: 110px;
+    height: auto;
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.creator-credit p {
+    font-size: 13px;
+    margin: 6px 0;
+}
+
+.creator-credit span {
+    color: #F5C6D0;
+    font-size: 12px;
+}
+
+.creator-credit a {
+    color: #F5C6D0;
+    text-decoration: underline;
+}
