@@ -1,13 +1,18 @@
 
+
 :root {
-    --dark: #173F35;
-    --green: #47745B;
-    --sage: #DCE9DC;
-    --cream: #F7F7F0;
+    --dark: #4B2E2B;
+    --green: #8B5E5A;
+    --sage: #F5C6D0;
+    --cream: #FFF9F5;
+
     --white: #FFFFFF;
-    --text: #25332C;
-    --muted: #718078;
-    --border: #E4EAE2;
+    --text: #4B2E2B;
+    --muted: #927A78;
+    --border: #EBD5D8;
+
+    --pink: #FCE9ED;
+    --chocolate: #4B2E2B;
 }
 
 * {
