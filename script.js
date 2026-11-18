@@ -55,9 +55,9 @@ calculator.innerHTML = `
     <h3>Check Your Transportation Fare</h3>
 
     <p class="demo-notice">
-        Traditional jeepney fares use the minimum fare
-        and succeeding-distance rate. Other transport fares
-        are subject to verification.
+        FareFair uses estimated road distances to calculate
+        traditional jeepney fares. Actual jeepney routes and
+        fares may vary.
     </p>
 
     <label for="origin">Origin</label>
@@ -81,17 +81,6 @@ calculator.innerHTML = `
         <option value="tricycle">Tricycle</option>
     </select>
 
-    <div id="distance-container" style="display:none;">
-        <label for="distance">Estimated Distance (km)</label>
-        <input
-            type="number"
-            id="distance"
-            min="0.1"
-            step="0.1"
-            placeholder="Enter distance in kilometers"
-        >
-<small>Fare will be calculated based on the selected trip distance.</small>    </div>
-
     <label for="passenger">Passenger Category</label>
     <select id="passenger">
         <option value="regular">Regular Passenger</option>
@@ -107,19 +96,112 @@ calculator.innerHTML = `
     </div>
 `;
 
-const transportSelect = document.getElementById("transport");
-const distanceContainer = document.getElementById("distance-container");
 
-transportSelect.addEventListener("change", function () {
-    distanceContainer.style.display =
-        this.value === "jeepney" ? "block" : "none";
-});
+// AUTOMATIC ROAD DISTANCE LOOKUP
 
-document.getElementById("check-fare").addEventListener("click", function () {
+const coordinateCache = {};
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getBarangayCoordinates(barangay) {
+
+    if (coordinateCache[barangay]) {
+        return coordinateCache[barangay];
+    }
+
+    const query = encodeURIComponent(
+        `${barangay}, San Mateo, Rizal, Philippines`
+    );
+
+    const url =
+        `https://photon.komoot.io/api/?q=${query}&limit=5&lat=14.698&lon=121.12`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("Location lookup failed.");
+    }
+
+    const data = await response.json();
+
+    if (!data.features || data.features.length === 0) {
+        throw new Error(`Could not locate ${barangay}.`);
+    }
+
+    // Prefer a result located in San Mateo, Rizal.
+    const match = data.features.find(feature => {
+        const properties = feature.properties || {};
+        const locationText = [
+            properties.city,
+            properties.county,
+            properties.state,
+            properties.name
+        ].join(" ").toLowerCase();
+
+        return locationText.includes("san mateo") ||
+               locationText.includes("rizal");
+    });
+
+    const selected = match || data.features[0];
+
+    const coordinates = selected.geometry.coordinates;
+
+    const location = {
+        longitude: coordinates[0],
+        latitude: coordinates[1]
+    };
+
+    coordinateCache[barangay] = location;
+
+    return location;
+}
+
+
+async function getRoadDistance(origin, destination) {
+
+    const start = await getBarangayCoordinates(origin);
+
+    // Avoid sending geocoding requests too quickly.
+    await delay(1100);
+
+    const end = await getBarangayCoordinates(destination);
+
+    const routeURL =
+        `https://router.project-osrm.org/route/v1/driving/` +
+        `${start.longitude},${start.latitude};` +
+        `${end.longitude},${end.latitude}` +
+        `?overview=false`;
+
+    const response = await fetch(routeURL);
+
+    if (!response.ok) {
+        throw new Error("Road distance service is unavailable.");
+    }
+
+    const data = await response.json();
+
+    if (data.code !== "Ok" || !data.routes.length) {
+        throw new Error("No road route was found.");
+    }
+
+    // OSRM returns distance in meters.
+    return data.routes[0].distance / 1000;
+}
+
+
+// FARE CALCULATOR
+
+document.getElementById("check-fare").addEventListener("click", async function () {
+
+    const button = this;
+
     const origin = document.getElementById("origin").value;
     const destination = document.getElementById("destination").value;
     const transport = document.getElementById("transport").value;
     const passenger = document.getElementById("passenger").value;
+
     const result = document.getElementById("fare-result");
 
     if (!origin || !destination || !transport) {
@@ -138,55 +220,71 @@ document.getElementById("check-fare").addEventListener("click", function () {
             <p><strong>Origin:</strong> ${origin}</p>
             <p><strong>Destination:</strong> ${destination}</p>
             <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-            <p>Route-specific fare information is still being verified.</p>
-            <small>FareFair will display an amount once reliable fare data is available.</small>
+            <p>Fare information for this transportation type is not yet available.</p>
         `;
         return;
     }
 
-    const distance = parseFloat(
-        document.getElementById("distance").value
-    );
+    button.disabled = true;
+    button.textContent = "Calculating...";
+    result.innerHTML = "<p>Finding the estimated road distance...</p>";
 
-    if (!distance || distance <= 0) {
-        result.innerHTML = "<p>Please enter a valid trip distance.</p>";
-        return;
+    try {
+
+        const distance = await getRoadDistance(origin, destination);
+
+        let regularFare = jeepneyMinimumFare;
+
+        if (distance > minimumDistance) {
+            regularFare +=
+                Math.ceil(distance - minimumDistance) * succeedingRate;
+        }
+
+        const discountRate = discounts[passenger];
+        const discountAmount = regularFare * discountRate;
+        const finalFare = regularFare - discountAmount;
+
+        result.innerHTML = `
+            <h3>Fare Estimate</h3>
+
+            <p><strong>Origin:</strong> ${origin}</p>
+            <p><strong>Destination:</strong> ${destination}</p>
+            <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
+            <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
+
+            <hr>
+
+            <p>Estimated Road Distance: ${distance.toFixed(2)} km</p>
+            <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
+            <p>Discount: ${(discountRate * 100).toFixed(0)}%</p>
+            <p>Discount Amount: ₱${discountAmount.toFixed(2)}</p>
+
+            <h3>Estimated Fare: ₱${finalFare.toFixed(2)}</h3>
+
+            <small>
+                This is an estimate using barangay-level location
+                results and a suggested road route. It may differ
+                from the actual jeepney route and fare. Applicable
+                passenger discounts are subject to eligibility rules.
+            </small>
+        `;
+
+    } catch (error) {
+
+        result.innerHTML = `
+            <h3>Unable to Calculate Fare</h3>
+            <p>We couldn't retrieve the road distance for this trip.</p>
+            <small>Please try again later. The location or routing service may be temporarily unavailable.</small>
+        `;
+
+        console.error("FareFair calculation error:", error);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Check Fare";
+
     }
-
-    let regularFare = jeepneyMinimumFare;
-
-    if (distance > minimumDistance) {
-        regularFare +=
-            Math.ceil(distance - minimumDistance) * succeedingRate;
-    }
-
-    const discountRate = discounts[passenger];
-    const discountAmount = regularFare * discountRate;
-    const finalFare = regularFare - discountAmount;
-
-    result.innerHTML = `
-        <h3>Fare Estimate</h3>
-
-        <p><strong>Origin:</strong> ${origin}</p>
-        <p><strong>Destination:</strong> ${destination}</p>
-        <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-        <p><strong>Distance:</strong> ${distance.toFixed(1)} km</p>
-        <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
-
-        <hr>
-
-        <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
-        <p>Discount: ${(discountRate * 100).toFixed(0)}%</p>
-        <p>Discount Amount: ₱${discountAmount.toFixed(2)}</p>
-
-        <h3>Estimated Fare: ₱${finalFare.toFixed(2)}</h3>
-
-        <small>
-            Based on the traditional jeepney fare reference.
-            Actual route distance and fare should be confirmed.
-            Discounts are subject to applicable eligibility rules.
-        </small>
-    `;
 });
 
 
@@ -258,6 +356,7 @@ if (mapElement && typeof L !== "undefined") {
     ];
 
     terminals.forEach(terminal => {
+
         const marker = L.marker(terminal.coords).addTo(farefairMap);
 
         marker.bindPopup(`
@@ -266,6 +365,7 @@ if (mapElement && typeof L !== "undefined") {
             ${terminal.area}<br>
             <small>Approximate area marker. Exact entrance is subject to verification.</small>
         `);
+
     });
 
     const terminalBounds = L.latLngBounds(
@@ -275,4 +375,5 @@ if (mapElement && typeof L !== "undefined") {
     farefairMap.fitBounds(terminalBounds, {
         padding: [30, 30]
     });
+
 }
