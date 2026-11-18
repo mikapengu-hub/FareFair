@@ -486,3 +486,16 @@ footer {
     position: relative;
     z-index: 2;
 }
+/* FAREFAIR HERO TITLE */
+
+.hero h1 {
+    color: #F5C6D0 !important;
+    font-size: 58px;
+    font-weight: 800;
+}
+
+.hero h2 {
+    color: #FFFFFF !important;
+    font-size: 38px;
+    font-weight: 700;
+}
