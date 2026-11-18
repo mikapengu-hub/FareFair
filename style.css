@@ -1,0 +1,164 @@
+
+:root {
+    --green-dark: #173F35;
+    --green: #47745B;
+    --green-light: #E8EFE7;
+    --cream: #F7F6F0;
+    --white: #FFFFFF;
+    --text: #252B28;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 8%;
+    background: var(--white);
+    border-bottom: 1px solid #e5e5df;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+    color: var(--green-dark);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: var(--green);
+}
+
+.hero {
+    min-height: 510px;
+    padding: 110px 10%;
+    background: var(--green-dark);
+    color: var(--white);
+}
+
+.eyebrow {
+    color: #C5D9C9;
+    font-size: 13px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 7vw, 70px);
+    line-height: 1.1;
+    margin-bottom: 22px;
+}
+
+.hero p {
+    max-width: 550px;
+    color: #E1EAE2;
+    margin-bottom: 30px;
+}
+
+.primary-button {
+    display: inline-block;
+    background: var(--cream);
+    color: var(--green-dark);
+    padding: 13px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.primary-button:hover {
+    background: #DDE8DC;
+}
+
+.section {
+    padding: 75px 10%;
+    min-height: 230px;
+}
+
+.section h2 {
+    font-size: 32px;
+    color: var(--green-dark);
+    margin-bottom: 12px;
+}
+
+.section p {
+    max-width: 650px;
+}
+
+#calculator {
+    background: var(--white);
+}
+
+#routes {
+    background: var(--green-light);
+}
+
+#rights {
+    background: var(--white);
+}
+
+#about {
+    background: var(--cream);
+}
+
+#calculator-content {
+    margin-top: 25px;
+    padding: 25px;
+    background: var(--green-light);
+    border-radius: 8px;
+    max-width: 650px;
+}
+
+footer {
+    background: var(--green-dark);
+    color: var(--white);
+    text-align: center;
+    padding: 28px 15px;
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
+    }
+
+    .hero {
+        padding: 85px 8%;
+    }
+
+    .section {
+        padding: 55px 8%;
+    }
+}
