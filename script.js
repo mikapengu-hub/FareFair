@@ -291,4 +291,8 @@ const terminalBounds = L.latLngBounds(
 farefairMap.fitBounds(terminalBounds, {
     padding: [30, 30]
 });
+// TEST MARKER - CHECK IF LEAFLET PINS WORK
 
+L.marker([14.698, 121.12])
+    .addTo(farefairMap)
+    .bindPopup("<strong>FareFair Test Pin</strong>");
