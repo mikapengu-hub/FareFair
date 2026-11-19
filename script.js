@@ -550,8 +550,8 @@ async function calculateFare() {
 // 9. INTERACTIVE MAP
 // ------------------------------------------
 
-function initializeMap() {
 
+function initializeMap() {
     const mapElement = document.getElementById("farefair-map");
 
     if (!mapElement) {
@@ -560,29 +560,24 @@ function initializeMap() {
     }
 
     if (typeof L === "undefined") {
-        console.error("Leaflet did not load. Map cannot initialize.");
+        console.error("Leaflet did not load.");
         mapElement.innerHTML = "<p>Map is temporarily unavailable.</p>";
         return;
     }
 
-    // Prevent duplicate map initialization.
     if (mapElement._leaflet_id) {
         return;
     }
 
-  const sanMateoBounds = L.latLngBounds(
-    [14.652484, 121.111299],
-    [14.723037, 121.207844]
-);
+    const sanMateoBounds = L.latLngBounds(
+        [14.652484, 121.111299],
+        [14.723037, 121.207844]
+    );
 
-const farefairMap = L.map("farefair-map", {
-    maxBounds: sanMateoBounds,
-    maxBoundsViscosity: 1
-});
-
-farefairMap.fitBounds(sanMateoBounds, {
-    padding: [10, 10]
-});
+    const farefairMap = L.map(mapElement, {
+        maxBounds: sanMateoBounds,
+        maxBoundsViscosity: 1
+    });
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -590,148 +585,92 @@ farefairMap.fitBounds(sanMateoBounds, {
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(farefairMap);
 
-
-    // APPROXIMATE TERMINAL AREA MARKERS
-    // Locations require further verification.
-
+    // Keep all existing terminal names and coordinates.
     const terminals = [
-
         {
             name: "AFPHODA Jeep Terminal",
             type: "Jeepney",
             area: "AFP Road, Silangan",
             coords: [14.6579375, 121.1513125]
         },
-
         {
             name: "SIL TODA Terminal",
             type: "Tricycle",
             area: "Langka Street, Silangan",
             coords: [14.6576875, 121.1520625]
         },
-
         {
             name: "GBS TODA Terminal",
             type: "Tricycle",
             area: "Kambal Road",
             coords: [14.6959375, 121.1214375]
         },
-
         {
             name: "BUTODA Terminal",
             type: "Tricycle",
             area: "Kambal Road",
             coords: [14.6959375, 121.1214375]
         },
-
         {
             name: "MATODA Terminal",
             type: "Tricycle",
             area: "Patiis Road",
             coords: [14.7025625, 121.1265625]
         },
-
         {
             name: "Patiis Tricycle Terminal",
             type: "Tricycle",
             area: "Malanday",
             coords: [14.7025625, 121.1263125]
         },
-
         {
             name: "SN TODA Terminal",
             type: "Tricycle",
             area: "San Mateo",
             coords: [14.6691875, 121.1343125]
         },
-
         {
             name: "DB TODA Terminal",
             type: "Tricycle",
             area: "General Luna Avenue",
             coords: [14.7008125, 121.1246875]
         }
-
     ];
 
+    // Create pink clickable terminal pins.
+    terminals.forEach(terminal => {
+        const pinkPin = L.divIcon({
+            className: "pink-terminal-marker",
+            html: `
+                <div class="pink-pin">
+                    <span>📍</span>
+                </div>
+            `,
+            iconSize: [50, 60],
+            iconAnchor: [25, 58],
+            popupAnchor: [0, -55]
+        });
 
- terminals.forEach(terminal => {
-
-    const pinkPin = L.divIcon({
-        className: "pink-terminal-marker",
-        html: `
-            <div class="pink-pin">
-                <span>📍</span>
+        L.marker(terminal.coords, {
+            icon: pinkPin
+        })
+        .addTo(farefairMap)
+        .bindPopup(`
+            <div class="terminal-popup">
+                <strong>${terminal.name}</strong>
+                <p>${terminal.type} Terminal</p>
+                <small>${terminal.area}</small>
             </div>
-        `,
-        iconSize: [50, 60],
-        iconAnchor: [25, 58],
-        popupAnchor: [0, -55]
+        `);
     });
 
-    L.marker(terminal.coords, {
-        icon: pinkPin
-    })
-    .addTo(farefairMap)
-    .bindPopup(`
-        <div class="terminal-popup">
-            <strong>${terminal.name}</strong>
-            <p>${terminal.type} Terminal</p>
-            <small>${terminal.area}</small>
-        </div>
-    `);
+    farefairMap.fitBounds(sanMateoBounds, {
+        padding: [10, 10]
+    });
 
-});
-    L.marker(terminal.coords, {
-        icon: pinkPin
-    })
-    .addTo(farefairMap)
-    .bindPopup(`
-        <div class="terminal-popup">
-            <strong>${terminal.name}</strong>
-            <p>San Mateo, Rizal</p>
-        </div>
-    `);
-});
-
-
-   
-    setTimeout(() => .pink-terminal-marker {
-    background: transparent;
-    border: none;
-}
-
-.pink-pin {
-    width: 46px;
-    height: 46px;
-    background: #F5C6D0;
-    border: 3px solid #8B5E5A;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(75, 46, 43, 0.35);
-}
-
-.pink-pin span {
-    transform: rotate(45deg);
-    font-size: 25px;
-}
-
-.terminal-popup {
-    text-align: center;
-    color: #4B2E2B;
-    font-family: Arial, sans-serif;
-}
-
-.terminal-popup strong {
-    font-size: 15px;
-}
-
-.terminal-popup p {
-    margin: 5px 0;
-}farefairMap.invalidateSize(), 200);
+    setTimeout(() => {
+        farefairMap.invalidateSize();
+    }, 300);
 }
 
 
