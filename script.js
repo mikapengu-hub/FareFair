@@ -685,9 +685,9 @@ async function initializeMap() {
                     <span>📍</span>
                 </div>
             `,
-            iconSize: [64, 72],
-            iconAnchor: [32, 68],
-            popupAnchor: [0, -65]
+           iconSize: [80, 85],
+iconAnchor: [40, 80],
+popupAnchor: [0, -78]
         });
 
         L.marker(terminal.coords, {
