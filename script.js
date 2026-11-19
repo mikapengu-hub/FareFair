@@ -1,5 +1,13 @@
 
-const calculator = document.getElementById("calculator-content");
+// ==========================================
+// FAREFAIR - SAN MATEO, RIZAL
+// Fare Calculator and Interactive Map
+// ==========================================
+
+
+// ------------------------------------------
+// 1. BARANGAY DATABASE
+// ------------------------------------------
 
 const barangays = [
     "Ampid I",
@@ -18,6 +26,11 @@ const barangays = [
     "Santo Niño",
     "Silangan"
 ];
+
+
+// ------------------------------------------
+// 2. TRANSPORTATION AND PASSENGER LABELS
+// ------------------------------------------
 
 const transportNames = {
     jeepney: "Traditional Jeepney",
@@ -40,8 +53,14 @@ const discounts = {
     pwd: 0.20
 };
 
-// PROVISIONAL FARE REFERENCES
-// Verify against the applicable approved fare matrices.
+
+// ------------------------------------------
+// 3. FARE REFERENCES
+// ------------------------------------------
+
+// These are project estimates.
+// Confirm applicable official fare matrices before
+// presenting them as official fares.
 
 const fareRates = {
     jeepney: {
@@ -63,12 +82,14 @@ const fareRates = {
             minimumDistance: 5,
             succeedingRate: 2.49
         },
+
         airconCity: {
             name: "Air-conditioned City Bus",
             minimumFare: 18,
             minimumDistance: 5,
             succeedingRate: 2.98
         },
+
         ordinaryProvincial: {
             name: "Ordinary Provincial Bus",
             minimumFare: 12,
@@ -85,94 +106,123 @@ const fareRates = {
     }
 };
 
-// CALCULATOR INTERFACE
 
-calculator.innerHTML = `
-    <h3>Check Your Transportation Fare</h3>
+// ------------------------------------------
+// 4. INITIALIZE WEBSITE
+// ------------------------------------------
 
-    <p class="demo-notice">
-        FareFair provides estimated fares based on available
-        fare references and estimated road distances.
-        Actual routes and fares may vary.
-    </p>
+function initializeFareFair() {
 
-    <label for="origin">Origin</label>
-    <select id="origin">
-        <option value="">Select starting barangay</option>
-        ${barangayOptions()}
-    </select>
+    const calculator = document.getElementById("calculator-content");
 
-    <label for="destination">Destination</label>
-    <select id="destination">
-        <option value="">Select destination</option>
-        ${barangayOptions()}
-    </select>
+    if (calculator) {
+        buildCalculator(calculator);
+    }
 
-    <label for="transport">Transportation Type</label>
-    <select id="transport">
-        <option value="">Select transportation</option>
-        <option value="jeepney">Traditional Jeepney</option>
-        <option value="e-jeepney">E-Jeepney</option>
-        <option value="bus">Bus</option>
-        <option value="tricycle">Tricycle</option>
-    </select>
+    initializeMap();
+}
 
-    <div id="bus-options" style="display:none;">
-        <label for="bus-type">Bus Classification</label>
-        <select id="bus-type">
-            <option value="ordinaryCity">Ordinary City Bus</option>
-            <option value="airconCity">Air-conditioned City Bus</option>
-            <option value="ordinaryProvincial">Ordinary Provincial Bus</option>
+
+// ------------------------------------------
+// 5. BUILD FARE CALCULATOR
+// ------------------------------------------
+
+function buildCalculator(calculator) {
+
+    function barangayOptions() {
+        return barangays.map(name =>
+            `<option value="${name}">${name}</option>`
+        ).join("");
+    }
+
+    calculator.innerHTML = `
+        <h3>Check Your Transportation Fare</h3>
+
+        <p class="demo-notice">
+            FareFair provides estimated fares using available
+            fare references and estimated road distances.
+            Actual fares may vary.
+        </p>
+
+        <label for="origin">Origin</label>
+        <select id="origin">
+            <option value="">Select starting barangay</option>
+            ${barangayOptions()}
         </select>
-    </div>
 
-    <div id="tricycle-options" style="display:none;">
-        <label for="tricycle-type">Tricycle Fare Type</label>
-        <select id="tricycle-type">
-            <option value="special">Special (Exclusive Ride)</option>
-            <option value="hati">Hati (4 Passengers)</option>
+        <label for="destination">Destination</label>
+        <select id="destination">
+            <option value="">Select destination</option>
+            ${barangayOptions()}
         </select>
-    </div>
 
-    <label for="passenger">Passenger Category</label>
-    <select id="passenger">
-        <option value="regular">Regular Passenger</option>
-        <option value="student">Student</option>
-        <option value="senior">Senior Citizen</option>
-        <option value="pwd">PWD</option>
-    </select>
+        <label for="transport">Transportation Type</label>
+        <select id="transport">
+            <option value="">Select transportation</option>
+            <option value="jeepney">Traditional Jeepney</option>
+            <option value="e-jeepney">E-Jeepney</option>
+            <option value="bus">Bus</option>
+            <option value="tricycle">Tricycle</option>
+        </select>
 
-    <button id="check-fare" type="button">
-        Check Fare
-    </button>
+        <div id="bus-options" style="display:none;">
+            <label for="bus-type">Bus Classification</label>
+            <select id="bus-type">
+                <option value="ordinaryCity">Ordinary City Bus</option>
+                <option value="airconCity">Air-conditioned City Bus</option>
+                <option value="ordinaryProvincial">Ordinary Provincial Bus</option>
+            </select>
+        </div>
 
-    <div id="fare-result" aria-live="polite">
-        <p>Your fare information will appear here.</p>
-    </div>
-`;
+        <div id="tricycle-options" style="display:none;">
+            <label for="tricycle-type">Tricycle Fare Type</label>
+            <select id="tricycle-type">
+                <option value="special">Special (Exclusive Ride)</option>
+                <option value="hati">Hati (4 Passengers)</option>
+            </select>
+        </div>
+
+        <label for="passenger">Passenger Category</label>
+        <select id="passenger">
+            <option value="regular">Regular Passenger</option>
+            <option value="student">Student</option>
+            <option value="senior">Senior Citizen</option>
+            <option value="pwd">PWD</option>
+        </select>
+
+        <button id="check-fare" type="button">
+            Check Fare
+        </button>
+
+        <div id="fare-result" aria-live="polite">
+            <p>Your fare estimate will appear here.</p>
+        </div>
+    `;
+
+    const transport = document.getElementById("transport");
+
+    transport.addEventListener("change", function () {
+
+        document.getElementById("bus-options").style.display =
+            this.value === "bus" ? "block" : "none";
+
+        document.getElementById("tricycle-options").style.display =
+            this.value === "tricycle" ? "block" : "none";
+    });
+
+    document.getElementById("check-fare")
+        .addEventListener("click", calculateFare);
+}
 
 
-// SHOW ADDITIONAL OPTIONS WHEN NEEDED
-
-const transportSelect = document.getElementById("transport");
-
-transportSelect.addEventListener("change", function () {
-
-    document.getElementById("bus-options").style.display =
-        this.value === "bus" ? "block" : "none";
-
-    document.getElementById("tricycle-options").style.display =
-        this.value === "tricycle" ? "block" : "none";
-
-});
-
-
-// AUTOMATIC ROAD DISTANCE LOOKUP
+// ------------------------------------------
+// 6. AUTOMATIC DISTANCE CALCULATION
+// ------------------------------------------
 
 const coordinateCache = {};
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 async function getBarangayCoordinates(barangay) {
@@ -191,7 +241,7 @@ async function getBarangayCoordinates(barangay) {
     const response = await fetch(url);
 
     if (!response.ok) {
-        throw new Error("Location lookup failed.");
+        throw new Error("Location service unavailable.");
     }
 
     const data = await response.json();
@@ -201,6 +251,7 @@ async function getBarangayCoordinates(barangay) {
     }
 
     const match = data.features.find(feature => {
+
         const properties = feature.properties || {};
 
         const locationText = [
@@ -239,32 +290,34 @@ async function getRoadDistance(origin, destination) {
     const routeURL =
         `https://router.project-osrm.org/route/v1/driving/` +
         `${start.longitude},${start.latitude};` +
-        `${end.longitude},${end.latitude}` +
-        `?overview=false`;
+        `${end.longitude},${end.latitude}?overview=false`;
 
     const response = await fetch(routeURL);
 
     if (!response.ok) {
-        throw new Error("Road distance service is unavailable.");
+        throw new Error("Road distance service unavailable.");
     }
 
     const data = await response.json();
 
-    if (data.code !== "Ok" || !data.routes.length) {
-        throw new Error("No road route was found.");
+    if (data.code !== "Ok" || !data.routes || !data.routes.length) {
+        throw new Error("No road route found.");
     }
 
     return data.routes[0].distance / 1000;
 }
 
 
-// DISTANCE-BASED FARE CALCULATION
+// ------------------------------------------
+// 7. FARE COMPUTATION
+// ------------------------------------------
 
 function calculateDistanceFare(distance, rate) {
 
     let fare = rate.minimumFare;
 
     if (distance > rate.minimumDistance) {
+
         const succeedingKilometers =
             Math.ceil(distance - rate.minimumDistance);
 
@@ -275,259 +328,247 @@ function calculateDistanceFare(distance, rate) {
 }
 
 
-// APPLY PASSENGER DISCOUNT
-
 function applyDiscount(fare, passenger) {
 
     const discountRate = discounts[passenger] || 0;
 
-    const discountAmount = fare * discountRate;
-
     return {
         discountRate,
-        discountAmount,
-        finalFare: fare - discountAmount
+        discountAmount: fare * discountRate,
+        finalFare: fare * (1 - discountRate)
     };
 }
 
 
-// FARE CALCULATOR BUTTON
+// ------------------------------------------
+// 8. MAIN FARE CALCULATOR
+// ------------------------------------------
 
-document.getElementById("check-fare").addEventListener(
-    "click",
-    async function () {
+async function calculateFare() {
 
-        const button = this;
+    const button = document.getElementById("check-fare");
+    const result = document.getElementById("fare-result");
 
-        const origin = document.getElementById("origin").value;
-        const destination = document.getElementById("destination").value;
-        const transport = document.getElementById("transport").value;
-        const passenger = document.getElementById("passenger").value;
+    const origin = document.getElementById("origin").value;
+    const destination = document.getElementById("destination").value;
+    const transport = document.getElementById("transport").value;
+    const passenger = document.getElementById("passenger").value;
 
-        const result = document.getElementById("fare-result");
+    const busType = document.getElementById("bus-type").value;
+    const tricycleType = document.getElementById("tricycle-type").value;
 
-        const busType = document.getElementById("bus-type").value;
-        const tricycleType = document.getElementById("tricycle-type").value;
-
-        if (!origin || !destination || !transport) {
-            result.innerHTML =
-                "<p>Please complete your trip details.</p>";
-            return;
-        }
-
-        if (origin === destination) {
-            result.innerHTML =
-                "<p>Please select two different barangays.</p>";
-            return;
-        }
-
-        button.disabled = true;
-        button.textContent = "Calculating...";
-
-        try {
-
-            const discount = discounts[passenger] || 0;
-
-            // TRICYCLE CALCULATION
-
-            if (transport === "tricycle") {
-
-                const discountLabel =
-                    (discount * 100).toFixed(0);
-
-                if (tricycleType === "special") {
-
-                    const minimum =
-                        fareRates.tricycle.specialMin;
-
-                    const maximum =
-                        fareRates.tricycle.specialMax;
-
-                    const discountedMinimum = minimum * (1 - discount);
-                    const discountedMaximum = maximum * (1 - discount);
-
-                    result.innerHTML = `
-                        <h3>Tricycle Fare Estimate</h3>
-
-                        <p><strong>Origin:</strong> ${origin}</p>
-                        <p><strong>Destination:</strong> ${destination}</p>
-                        <p><strong>Transportation:</strong> Tricycle</p>
-                        <p><strong>Fare Type:</strong> Special (Exclusive Ride)</p>
-                        <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
-
-                        <hr>
-
-                        <p>Regular Fare Range: ₱${minimum.toFixed(2)}–₱${maximum.toFixed(2)}</p>
-                        <p>Discount: ${discountLabel}%</p>
-
-                        <h3>
-                            Estimated Fare: ₱${discountedMinimum.toFixed(2)}
-                            – ₱${discountedMaximum.toFixed(2)}
-                        </h3>
-
-                        <small>
-                            Special fare is based on the locally reported
-                            ₱50–₱60 range. The exact amount depends on the
-                            agreed trip fare. Local tariff and discount
-                            application still require verification.
-                        </small>
-                    `;
-
-                } else {
-
-                    const passengers =
-                        fareRates.tricycle.hatiPassengers;
-
-                    const perPassenger =
-                        fareRates.tricycle.hatiPerPassenger;
-
-                    const totalFare = perPassenger * passengers;
-
-                    const discountedPerPassenger =
-                        perPassenger * (1 - discount);
-
-                    const discountedTotal =
-                        totalFare * (1 - discount);
-
-                    result.innerHTML = `
-                        <h3>Tricycle Fare Estimate</h3>
-
-                        <p><strong>Origin:</strong> ${origin}</p>
-                        <p><strong>Destination:</strong> ${destination}</p>
-                        <p><strong>Transportation:</strong> Tricycle</p>
-                        <p><strong>Fare Type:</strong> Hati (Shared Ride)</p>
-                        <p><strong>Passengers:</strong> ${passengers}</p>
-                        <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
-
-                        <hr>
-
-                        <p>Regular Fare per Passenger: ₱${perPassenger.toFixed(2)}</p>
-                        <p>Total Regular Fare: ₱${totalFare.toFixed(2)}</p>
-                        <p>Discount: ${(discount * 100).toFixed(0)}%</p>
-
-                        <h3>
-                            Fare per Passenger: ₱${discountedPerPassenger.toFixed(2)}
-                        </h3>
-
-                        <h3>
-                            Total Fare: ₱${discountedTotal.toFixed(2)}
-                        </h3>
-
-                        <small>
-                            Based on the reported ₱15 per passenger
-                            for a four-passenger shared ride.
-                            Local tariff and discount application
-                            still require verification.
-                        </small>
-                    `;
-
-                }
-
-                return;
-            }
-
-
-            // AUTOMATIC DISTANCE FOR JEEPNEYS AND BUSES
-
-            result.innerHTML =
-                "<p>Finding the estimated road distance...</p>";
-
-            const distance =
-                await getRoadDistance(origin, destination);
-
-            let rate;
-            let classification = "";
-
-            if (transport === "jeepney") {
-
-                rate = fareRates.jeepney;
-
-            } else if (transport === "e-jeepney") {
-
-                rate = fareRates["e-jeepney"];
-
-                classification =
-                    "Provisional modern jeepney fare classification";
-
-            } else if (transport === "bus") {
-
-                rate = fareRates.bus[busType];
-
-                classification = rate.name;
-
-            }
-
-            const regularFare =
-                calculateDistanceFare(distance, rate);
-
-            const fareResult =
-                applyDiscount(regularFare, passenger);
-
-            result.innerHTML = `
-                <h3>Fare Estimate</h3>
-
-                <p><strong>Origin:</strong> ${origin}</p>
-                <p><strong>Destination:</strong> ${destination}</p>
-                <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
-
-                ${classification ? `
-                    <p><strong>Classification:</strong> ${classification}</p>
-                ` : ""}
-
-                <p><strong>Passenger Category:</strong> ${passengerNames[passenger]}</p>
-
-                <hr>
-
-                <p>Estimated Road Distance: ${distance.toFixed(2)} km</p>
-                <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
-                <p>Discount: ${(fareResult.discountRate * 100).toFixed(0)}%</p>
-                <p>Discount Amount: ₱${fareResult.discountAmount.toFixed(2)}</p>
-
-                <h3>Estimated Fare: ₱${fareResult.finalFare.toFixed(2)}</h3>
-
-                <small>
-                    This calculation uses an estimated road distance
-                    between barangay-level location results. It may
-                    differ from the actual public transportation route
-                    and approved fare matrix. Please verify the fare
-                    with the transport operator.
-                </small>
-            `;
-
-        } catch (error) {
-
-            result.innerHTML = `
-                <h3>Unable to Calculate Fare</h3>
-
-                <p>
-                    We couldn't retrieve the estimated road distance
-                    for this trip.
-                </p>
-
-                <small>
-                    Please try again later. The location or routing
-                    service may be temporarily unavailable.
-                </small>
-            `;
-
-            console.error("FareFair calculation error:", error);
-
-        } finally {
-
-            button.disabled = false;
-            button.textContent = "Check Fare";
-
-        }
-
+    if (!origin || !destination || !transport) {
+        result.innerHTML = "<p>Please complete your trip details.</p>";
+        return;
     }
-);
+
+    if (origin === destination) {
+        result.innerHTML = "<p>Please select two different barangays.</p>";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Calculating...";
+
+    try {
+
+        const discount = discounts[passenger] || 0;
+
+        // TRICYCLE FARE
+
+        if (transport === "tricycle") {
+
+            if (tricycleType === "special") {
+
+                const minimum = fareRates.tricycle.specialMin;
+                const maximum = fareRates.tricycle.specialMax;
+
+                const discountedMinimum = minimum * (1 - discount);
+                const discountedMaximum = maximum * (1 - discount);
+
+                result.innerHTML = `
+                    <h3>Tricycle Fare Estimate</h3>
+                    <p><strong>Origin:</strong> ${origin}</p>
+                    <p><strong>Destination:</strong> ${destination}</p>
+                    <p><strong>Transportation:</strong> Tricycle</p>
+                    <p><strong>Fare Type:</strong> Special (Exclusive Ride)</p>
+                    <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
+
+                    <hr>
+
+                    <p>Reported Regular Fare: ₱${minimum}–₱${maximum}</p>
+                    <p>Discount Reference: ${(discount * 100).toFixed(0)}%</p>
+
+                    <h3>
+                        Estimated Fare: ₱${discountedMinimum.toFixed(2)}
+                        – ₱${discountedMaximum.toFixed(2)}
+                    </h3>
+
+                    <small>
+                        Based on locally reported fare estimates.
+                        Confirm the agreed fare and applicable discount
+                        with the operator. Not an official tariff.
+                    </small>
+                `;
+
+            } else {
+
+                const passengers = fareRates.tricycle.hatiPassengers;
+                const perPassenger = fareRates.tricycle.hatiPerPassenger;
+
+                const totalFare = perPassenger * passengers;
+
+                const discountedPerPassenger =
+                    perPassenger * (1 - discount);
+
+                const discountedTotal =
+                    totalFare * (1 - discount);
+
+                result.innerHTML = `
+                    <h3>Tricycle Fare Estimate</h3>
+                    <p><strong>Origin:</strong> ${origin}</p>
+                    <p><strong>Destination:</strong> ${destination}</p>
+                    <p><strong>Transportation:</strong> Tricycle</p>
+                    <p><strong>Fare Type:</strong> Hati (Shared Ride)</p>
+                    <p><strong>Passengers:</strong> ${passengers}</p>
+                    <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
+
+                    <hr>
+
+                    <p>Reported Fare per Passenger: ₱${perPassenger.toFixed(2)}</p>
+                    <p>Total Regular Fare: ₱${totalFare.toFixed(2)}</p>
+                    <p>Discount Reference: ${(discount * 100).toFixed(0)}%</p>
+
+                    <h3>
+                        Fare per Passenger: ₱${discountedPerPassenger.toFixed(2)}
+                    </h3>
+
+                    <h3>
+                        Total Fare: ₱${discountedTotal.toFixed(2)}
+                    </h3>
+
+                    <small>
+                        Based on the locally reported ₱15 per passenger
+                        for a four-passenger shared ride. Confirm the
+                        applicable tariff and discount with the operator.
+                    </small>
+                `;
+            }
+
+            return;
+        }
 
 
-// FAREFAIR INTERACTIVE MAP
+        // JEEPNEY, E-JEEPNEY, AND BUS FARES
 
-const mapElement = document.getElementById("farefair-map");
+        result.innerHTML = "<p>Finding estimated road distance...</p>";
 
-if (mapElement && typeof L !== "undefined") {
+        const distance = await getRoadDistance(origin, destination);
+
+        let rate;
+        let classification = "";
+
+        if (transport === "jeepney") {
+
+            rate = fareRates.jeepney;
+
+        } else if (transport === "e-jeepney") {
+
+            rate = fareRates["e-jeepney"];
+            classification = "Provisional modern jeepney reference";
+
+        } else if (transport === "bus") {
+
+            rate = fareRates.bus[busType];
+
+            if (!rate) {
+                throw new Error("Bus classification unavailable.");
+            }
+
+            classification = rate.name;
+        }
+
+        const regularFare = calculateDistanceFare(distance, rate);
+
+        const fareResult = applyDiscount(regularFare, passenger);
+
+        result.innerHTML = `
+            <h3>Fare Estimate</h3>
+
+            <p><strong>Origin:</strong> ${origin}</p>
+            <p><strong>Destination:</strong> ${destination}</p>
+            <p><strong>Transportation:</strong> ${transportNames[transport]}</p>
+
+            ${classification ? `
+                <p><strong>Classification:</strong> ${classification}</p>
+            ` : ""}
+
+            <p><strong>Passenger:</strong> ${passengerNames[passenger]}</p>
+
+            <hr>
+
+            <p>Estimated Road Distance: ${distance.toFixed(2)} km</p>
+            <p>Regular Fare: ₱${regularFare.toFixed(2)}</p>
+            <p>Discount Reference: ${(fareResult.discountRate * 100).toFixed(0)}%</p>
+            <p>Discount Amount: ₱${fareResult.discountAmount.toFixed(2)}</p>
+
+            <h3>Estimated Fare: ₱${fareResult.finalFare.toFixed(2)}</h3>
+
+            <small>
+                This is an estimate based on road distance between
+                barangay-level location results. It may differ from
+                actual public transport routes and approved fare
+                matrices. Verify the fare with the operator.
+            </small>
+        `;
+
+    } catch (error) {
+
+        result.innerHTML = `
+            <h3>Unable to Calculate Fare</h3>
+            <p>
+                We couldn't retrieve the estimated road distance
+                for this trip.
+            </p>
+            <small>
+                Please try again later. The location or routing
+                service may be temporarily unavailable.
+            </small>
+        `;
+
+        console.error("FareFair calculation error:", error);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Check Fare";
+    }
+}
+
+
+// ------------------------------------------
+// 9. INTERACTIVE MAP
+// ------------------------------------------
+
+function initializeMap() {
+
+    const mapElement = document.getElementById("farefair-map");
+
+    if (!mapElement) {
+        console.warn("FareFair map container was not found.");
+        return;
+    }
+
+    if (typeof L === "undefined") {
+        console.error("Leaflet did not load. Map cannot initialize.");
+        mapElement.innerHTML = "<p>Map is temporarily unavailable.</p>";
+        return;
+    }
+
+    // Prevent duplicate map initialization.
+    if (mapElement._leaflet_id) {
+        return;
+    }
 
     const farefairMap = L.map("farefair-map").setView(
         [14.698, 121.12],
@@ -536,59 +577,74 @@ if (mapElement && typeof L !== "undefined") {
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(farefairMap);
 
+
+    // APPROXIMATE TERMINAL AREA MARKERS
+    // Locations require further verification.
+
     const terminals = [
+
         {
             name: "AFPHODA Jeep Terminal",
             type: "Jeepney",
             area: "AFP Road, Silangan",
             coords: [14.6579375, 121.1513125]
         },
+
         {
             name: "SIL TODA Terminal",
             type: "Tricycle",
             area: "Langka Street, Silangan",
             coords: [14.6576875, 121.1520625]
         },
+
         {
             name: "GBS TODA Terminal",
             type: "Tricycle",
             area: "Kambal Road",
             coords: [14.6959375, 121.1214375]
         },
+
         {
             name: "BUTODA Terminal",
             type: "Tricycle",
             area: "Kambal Road",
             coords: [14.6959375, 121.1214375]
         },
+
         {
             name: "MATODA Terminal",
             type: "Tricycle",
             area: "Patiis Road",
             coords: [14.7025625, 121.1265625]
         },
+
         {
             name: "Patiis Tricycle Terminal",
             type: "Tricycle",
             area: "Malanday",
             coords: [14.7025625, 121.1263125]
         },
+
         {
             name: "SN TODA Terminal",
             type: "Tricycle",
             area: "San Mateo",
             coords: [14.6691875, 121.1343125]
         },
+
         {
             name: "DB TODA Terminal",
             type: "Tricycle",
             area: "General Luna Avenue",
             coords: [14.7008125, 121.1246875]
         }
+
     ];
+
 
     terminals.forEach(terminal => {
 
@@ -598,10 +654,14 @@ if (mapElement && typeof L !== "undefined") {
             <strong>${terminal.name}</strong><br>
             ${terminal.type} Terminal<br>
             ${terminal.area}<br>
-            <small>Approximate area marker. Exact entrance is subject to verification.</small>
+            <small>
+                Approximate area marker.
+                Exact entrance requires verification.
+            </small>
         `);
 
     });
+
 
     const terminalBounds = L.latLngBounds(
         terminals.map(terminal => terminal.coords)
@@ -610,5 +670,21 @@ if (mapElement && typeof L !== "undefined") {
     farefairMap.fitBounds(terminalBounds, {
         padding: [30, 30]
     });
+
+    setTimeout(() => farefairMap.invalidateSize(), 200);
+}
+
+
+// ------------------------------------------
+// 10. START WEBSITE
+// ------------------------------------------
+
+if (document.readyState === "loading") {
+
+    document.addEventListener("DOMContentLoaded", initializeFareFair);
+
+} else {
+
+    initializeFareFair();
 
 }
