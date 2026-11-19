@@ -551,6 +551,7 @@ async function calculateFare() {
 // ------------------------------------------
 
 
+
 function initializeMap() {
     const mapElement = document.getElementById("farefair-map");
 
@@ -569,6 +570,7 @@ function initializeMap() {
         return;
     }
 
+    // San Mateo map viewing boundaries
     const sanMateoBounds = L.latLngBounds(
         [14.652484, 121.111299],
         [14.723037, 121.207844]
@@ -576,7 +578,10 @@ function initializeMap() {
 
     const farefairMap = L.map(mapElement, {
         maxBounds: sanMateoBounds,
-        maxBoundsViscosity: 1
+        maxBoundsViscosity: 1,
+        minZoom: 12,
+        maxZoom: 19,
+        zoomSnap: 0.5
     });
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -585,7 +590,7 @@ function initializeMap() {
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(farefairMap);
 
-    // Keep all existing terminal names and coordinates.
+    // Existing terminals — names and coordinates unchanged
     const terminals = [
         {
             name: "AFPHODA Jeep Terminal",
@@ -637,7 +642,7 @@ function initializeMap() {
         }
     ];
 
-    // Create pink clickable terminal pins.
+    // Larger pink clickable pins
     terminals.forEach(terminal => {
         const pinkPin = L.divIcon({
             className: "pink-terminal-marker",
@@ -646,9 +651,9 @@ function initializeMap() {
                     <span>📍</span>
                 </div>
             `,
-            iconSize: [50, 60],
-            iconAnchor: [25, 58],
-            popupAnchor: [0, -55]
+            iconSize: [64, 72],
+            iconAnchor: [32, 68],
+            popupAnchor: [0, -65]
         });
 
         L.marker(terminal.coords, {
@@ -664,14 +669,17 @@ function initializeMap() {
         `);
     });
 
+    // Start closer to San Mateo
     farefairMap.fitBounds(sanMateoBounds, {
-        padding: [10, 10]
+        padding: [20, 20],
+        maxZoom: 13
     });
 
     setTimeout(() => {
         farefairMap.invalidateSize();
     }, 300);
 }
+
 
 
 // ------------------------------------------
