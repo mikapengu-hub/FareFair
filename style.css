@@ -543,3 +543,41 @@ nav a:hover {
 }
 .footer-penguin {
     width: 110px;
+/* Pink Terminal Map Pins */
+.pink-terminal-marker {
+    background: transparent;
+    border: none;
+}
+
+.pink-pin {
+    width: 32px;
+    height: 32px;
+    background: #F5C6D0;
+    border: 2px solid #8B5E5A;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(75, 46, 43, 0.3);
+}
+
+.pink-pin span {
+    transform: rotate(45deg);
+    font-size: 17px;
+}
+
+.terminal-popup {
+    text-align: center;
+    color: #4B2E2B;
+    font-family: Arial, sans-serif;
+}
+
+.terminal-popup strong {
+    font-size: 14px;
+}
+
+.terminal-popup p {
+    margin: 5px 0 0;
+    font-size: 12px;
+}
