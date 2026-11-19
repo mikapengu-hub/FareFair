@@ -570,18 +570,19 @@ function initializeMap() {
         return;
     }
 
-   const sanMateoBounds = L.latLngBounds(
-    [14.64, 121.09],
-    [14.75, 121.17]
+  const sanMateoBounds = L.latLngBounds(
+    [14.652484, 121.111299],
+    [14.723037, 121.207844]
 );
 
 const farefairMap = L.map("farefair-map", {
     maxBounds: sanMateoBounds,
     maxBoundsViscosity: 1
-}).setView(
-    [14.698, 121.12],
-    14
-);
+});
+
+farefairMap.fitBounds(sanMateoBounds, {
+    padding: [10, 10]
+});
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
