@@ -552,7 +552,7 @@ async function calculateFare() {
 
 
 
-function initializeMap() {
+async function initializeMap() {
     const mapElement = document.getElementById("farefair-map");
 
     if (!mapElement) {
@@ -571,17 +571,47 @@ function initializeMap() {
     }
 
     // San Mateo map viewing boundaries
-    const sanMateoBounds = L.latLngBounds(
-        [14.652484, 121.111299],
-        [14.723037, 121.207844]
-    );
+   
+    // Load San Mateo's municipal boundary
+    const boundaryURL =
+        "https://services7.arcgis.com/poQdgvLD6DHnbpsT/ArcGIS/rest/services/Philippine_Administrative_Boundaries/FeatureServer/2/query?where=CITYMUN%3D%27San%20Mateo%27%20AND%20PROVINCE%3D%27Rizal%27&outFields=CITYMUN%2CPROVINCE&returnGeometry=true&outSR=4326&f=geojson";
+
+    let boundaryResponse;
+
+    try {
+        boundaryResponse = await fetch(boundaryURL);
+
+        if (!boundaryResponse.ok) {
+            throw new Error("Boundary data unavailable.");
+        }
+
+        var boundaryData = await boundaryResponse.json();
+
+        if (!boundaryData.features || !boundaryData.features.length) {
+            throw new Error("San Mateo boundary not found.");
+        }
+    } catch (error) {
+        console.error("Map boundary error:", error);
+        mapElement.innerHTML = "<p>Map boundary is temporarily unavailable. Please refresh.</p>";
+        return;
+    }
+
+    const boundaryLayer = L.geoJSON(boundaryData, {
+        style: {
+            color: "#D97891",
+            weight: 3,
+            fillColor: "#F5C6D0",
+            fillOpacity: 0.12
+        }
+    });
+
+    const sanMateoBounds = boundaryLayer.getBounds();
 
     const farefairMap = L.map(mapElement, {
-        maxBounds: sanMateoBounds,
+        maxBounds: sanMateoBounds.pad(0.02),
         maxBoundsViscosity: 1,
         minZoom: 12,
-        maxZoom: 19,
-        zoomSnap: 0.5
+        maxZoom: 19
     });
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -589,6 +619,10 @@ function initializeMap() {
         attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(farefairMap);
+
+    boundaryLayer.addTo(farefairMap);
+
+
 
     // Existing terminals — names and coordinates unchanged
     const terminals = [
