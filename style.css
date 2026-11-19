@@ -521,7 +521,7 @@ nav a:hover {
 }
 
 .footer-penguin {
-    width: 110px;
+    width: 110px;}
     height: auto;
     display: block;
     margin: 0 auto 12px;
@@ -550,10 +550,10 @@ nav a:hover {
 }
 
 .pink-pin {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     background: #F5C6D0;
-    border: 2px solid #8B5E5A;
+    border: 3px solid #8B5E5A;
     border-radius: 50% 50% 50% 0;
     transform: rotate(-45deg);
     display: flex;
@@ -564,9 +564,8 @@ nav a:hover {
 
 .pink-pin span {
     transform: rotate(45deg);
-    font-size: 17px;
+    font-size: 24px;
 }
-
 .terminal-popup {
     text-align: center;
     color: #4B2E2B;
