@@ -655,7 +655,8 @@ farefairMap.fitBounds(sanMateoBounds, {
     ];
 
 
-   terminals.forEach(terminal => {
+ terminals.forEach(terminal => {
+
     const pinkPin = L.divIcon({
         className: "pink-terminal-marker",
         html: `
@@ -663,11 +664,24 @@ farefairMap.fitBounds(sanMateoBounds, {
                 <span>📍</span>
             </div>
         `,
-        iconSize: [35, 35],
-        iconAnchor: [17, 35],
-        popupAnchor: [0, -32]
+        iconSize: [50, 60],
+        iconAnchor: [25, 58],
+        popupAnchor: [0, -55]
     });
 
+    L.marker(terminal.coords, {
+        icon: pinkPin
+    })
+    .addTo(farefairMap)
+    .bindPopup(`
+        <div class="terminal-popup">
+            <strong>${terminal.name}</strong>
+            <p>${terminal.type} Terminal</p>
+            <small>${terminal.area}</small>
+        </div>
+    `);
+
+});
     L.marker(terminal.coords, {
         icon: pinkPin
     })
@@ -681,15 +695,43 @@ farefairMap.fitBounds(sanMateoBounds, {
 });
 
 
-    const terminalBounds = L.latLngBounds(
-        terminals.map(terminal => terminal.coords)
-    );
+   
+    setTimeout(() => .pink-terminal-marker {
+    background: transparent;
+    border: none;
+}
 
-    farefairMap.fitBounds(terminalBounds, {
-        padding: [30, 30]
-    });
+.pink-pin {
+    width: 46px;
+    height: 46px;
+    background: #F5C6D0;
+    border: 3px solid #8B5E5A;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(75, 46, 43, 0.35);
+}
 
-    setTimeout(() => farefairMap.invalidateSize(), 200);
+.pink-pin span {
+    transform: rotate(45deg);
+    font-size: 25px;
+}
+
+.terminal-popup {
+    text-align: center;
+    color: #4B2E2B;
+    font-family: Arial, sans-serif;
+}
+
+.terminal-popup strong {
+    font-size: 15px;
+}
+
+.terminal-popup p {
+    margin: 5px 0;
+}farefairMap.invalidateSize(), 200);
 }
 
 
