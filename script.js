@@ -570,10 +570,18 @@ function initializeMap() {
         return;
     }
 
-    const farefairMap = L.map("farefair-map").setView(
-        [14.698, 121.12],
-        13
-    );
+   const sanMateoBounds = L.latLngBounds(
+    [14.64, 121.09],
+    [14.75, 121.17]
+);
+
+const farefairMap = L.map("farefair-map", {
+    maxBounds: sanMateoBounds,
+    maxBoundsViscosity: 1
+}).setView(
+    [14.698, 121.12],
+    14
+);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -646,21 +654,30 @@ function initializeMap() {
     ];
 
 
-    terminals.forEach(terminal => {
-
-        const marker = L.marker(terminal.coords).addTo(farefairMap);
-
-        marker.bindPopup(`
-            <strong>${terminal.name}</strong><br>
-            ${terminal.type} Terminal<br>
-            ${terminal.area}<br>
-            <small>
-                Approximate area marker.
-                Exact entrance requires verification.
-            </small>
-        `);
-
+   terminals.forEach(terminal => {
+    const pinkPin = L.divIcon({
+        className: "pink-terminal-marker",
+        html: `
+            <div class="pink-pin">
+                <span>📍</span>
+            </div>
+        `,
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -32]
     });
+
+    L.marker(terminal.coords, {
+        icon: pinkPin
+    })
+    .addTo(farefairMap)
+    .bindPopup(`
+        <div class="terminal-popup">
+            <strong>${terminal.name}</strong>
+            <p>San Mateo, Rizal</p>
+        </div>
+    `);
+});
 
 
     const terminalBounds = L.latLngBounds(
