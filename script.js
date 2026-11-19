@@ -64,21 +64,6 @@ const fareRates = {
             succeedingRate: 2.49
         },
 
-        airconCity: {
-            name: "Air-conditioned City Bus",
-            minimumFare: 18,
-            minimumDistance: 5,
-            succeedingRate: 2.98
-        },
-
-        ordinaryProvincial: {
-            name: "Ordinary Provincial Bus",
-            minimumFare: 12,
-            minimumDistance: 5,
-            succeedingRate: 2.20
-        }
-    },
-
     tricycle: {
         specialMin: 50,
         specialMax: 60,
